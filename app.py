@@ -1,4 +1,6 @@
 from flask import Flask
+from models.task import Task
+
 
 app = Flask(__name__)
 
@@ -7,9 +9,6 @@ app = Flask(__name__)
 
 
 
-@app.route('/')
-def hello_world():
-    return "Hello World! muito bom!"
 
 
 if __name__=="__main__":
