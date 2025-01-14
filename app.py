@@ -1,11 +1,46 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from models.task import Task
 
 
 app = Flask(__name__)
 
-#definir a rota raiz (Página inicial) e a função que será executada ao ser requisitada
+# CRUD
+#Create, Read, Update and Delete
+#Create--------------------
+tasks = []
+task_id_control = 1
+@app.route("/tasks", methods= ['POST'])
+def create_task():
+    global task_id_control
+    data = request.get_json()
+    new_task = Task(id = task_id_control, title = data['title'], description = data.get("Description", ""))
+    task_id_control +=1
+    tasks.append(new_task)
+    print(tasks)
+    return jsonify({"message":'Nova Tarefa criada com sucesso!'})
 
+#Read tasks---------------------
+@app.route("/tasks", methods=['GET'])
+def get_tasks():
+
+    task_list = [task.to_dict() for task in tasks]
+    output = {
+
+        "tasks":task_list,
+        "total_tasks":len(task_list)
+    }
+
+    return jsonify(output)
+
+#Read specific task---------------------
+
+@app.route("/tasks/<int:id>", methods=['GET'])
+def get_task(id):
+    for t in tasks:
+        if t.id ==id:
+            return jsonify(t.to_dict())
+
+    return jsonify({"message":"Não foi possível encontrar a atividade"} ),404
 
 
 
