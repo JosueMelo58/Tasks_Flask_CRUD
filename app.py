@@ -13,7 +13,7 @@ task_id_control = 1
 def create_task():
     global task_id_control
     data = request.get_json()
-    new_task = Task(id = task_id_control, title = data['title'], description = data.get("Description", ""))
+    new_task = Task(id = task_id_control, title = data['title'], description = data.get("description", ""))
     task_id_control +=1
     tasks.append(new_task)
     print(tasks)
@@ -43,8 +43,39 @@ def get_task(id):
     return jsonify({"message":"Não foi possível encontrar a atividade"} ),404
 
 
+#Update---------------
+
+app.route("/tasks/<int:id>", methods = ["PUT"])
+def update_task(id):
+    task = None
+    for t in tasks:
+        if t.id == id:
+            task = t
+            break
+    if task == None:
+        return jsonify({"message": "Não foi possível encontrar a atividade"}), 404
+    
+    data = request.get_json()
+
+    task.title = data["title"]
+    task.description = data["description"]
+    task.completed = data["completed"]
+    return jsonify({"messagem": "Tarefa atualizada com sucesso "})
 
 
+#Delete-----------------
+@app.route('/tasks/<int:id>', methods=["DELETE"])
+def delete_task(id):
+    task = None
+    for t in tasks:
+        if t.id == id:
+            task = t
+            break
+    if not task:
+        return jsonify({"message": "Não foi possível encontrar a atividade"}), 404
+
+    tasks.remove(task)
+    return jsonify({"message":"Tarefa deletada com sucesso!"})
 
 if __name__=="__main__":
     app.run(debug=True)
